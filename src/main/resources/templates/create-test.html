@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Test</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Create a New Test</h2>
+    <form id="createTestForm" th:action="@{/tests/create}" method="post">
+        <div class="form-group">
+            <label for="testName">Test Name</label>
+            <input type="text" class="form-control" id="testName" name="name" required>
+        </div>
+        <div id="questionsContainer">
+            <!-- Вопросы будут добавляться сюда -->
+        </div>
+        <button type="button" id="addQuestionButton" class="btn btn-secondary">Add Question</button>
+        <button type="submit" class="btn btn-primary">Submit Test</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let questionCount = 0;
+
+        $('#addQuestionButton').click(function () {
+            let questionHTML = `
+            <div class="form-group question-group">
+                <label>Question:</label>
+                <input type="text" class="form-control" name="questions[${questionCount}].content" required>
+                <div class="answersContainer">
+                    <button type="button" class="btn btn-sm btn-primary addAnswerButton">Add Answer</button>
+                </div>
+            </div>
+        `;
+            $('#questionsContainer').append(questionHTML);
+            questionCount++;
+        });
+
+        $(document).on('click', '.addAnswerButton', function () {
+            let questionIndex = $(this).closest('.question-group').index();
+            let answerCount = $(this).siblings('.answer').length;
+            let answerHTML = `
+            <div class="form-group answer">
+                <label>Answer:</label>
+                <input type="text" class="form-control" name="questions[${questionIndex}].answers[${answerCount}]" required>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="questions[${questionIndex}].correctAnswer" value="${answerCount}">
+                    <label class="form-check-label">Correct Answer</label>
+                </div>
+            </div>
+        `;
+            $(this).before(answerHTML);
+        });
+    });
+</script>
+</body>
+</html>

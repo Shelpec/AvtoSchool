@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>AutoSchool</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        /* Общие стили для body */
+        body {
+            background-color: #f7f8fa;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            background-color: #ffffff;
+            color: #1e1c1c;
+            font-size: 24px;
+            padding: 20px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ced4da;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background-color: #6c5ce7;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #575fcf;
+        }
+
+        .alert {
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        a {
+            color: #0984e3;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/index}">AutoSchool</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/users}">Админ</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/themes}">Теория</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/drivers}">Вождение</a>
+                </li>
+                <li class="nav-item" th:if = "${#authorization.expression('isAuthenticated()') and not #authorization.expression('hasRole(''USER'')')}">
+                    <a class="nav-link" th:href="@{/sessions}">Записи</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/test}">Тест</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/traffic-sign}">Знаки</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/profile}">Профиль</a>
+                </li>
+                <li class="nav-item" th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/register}">Регистрация</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<br /><br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+
+            <div th:if="${param.error}">
+                <div class="alert alert-danger">Invalid Email or Password</div>
+            </div>
+            <div th:if="${param.logout}">
+                <div class="alert alert-success"> You have been logged out.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 style="font-weight: bolder" class="text-center">Войти в систему</h2>
+                </div>
+                <div class="card-body">
+                    <form
+                            method="post"
+                            role="form"
+                            th:action="@{/login}"
+                            class="form-horizontal"
+                    >
+                        <div class="form-group mb-3">
+                            <label class="control-label"> Email</label>
+                            <label for="username"></label><input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    class="form-control"
+                                    placeholder="Enter email address"
+                            />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="control-label"> Password</label>
+                            <label for="password"></label><input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control"
+                                    placeholder="Enter password"
+                            />
+                        </div>
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary" >Войти</button>
+                            <span> Not registered ?
+                                <a th:href="@{/register}">Register/Signup here</a>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

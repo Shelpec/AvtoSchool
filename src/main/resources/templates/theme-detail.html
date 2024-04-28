@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${theme.title}">Детальная информация о теме</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" th:href="@{/css/theme.css}">-->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        header {
+            background-color: #ffffff; /* Темно-синий цвет */
+            color: black;
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        main {
+            background: white;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 900px; /* Немного увеличиваем ширину */
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-outline-info {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #1597bb;
+            color: #f8f9fa;
+        }
+
+        .btn-outline-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #2ecc71;
+            color: #f8f9fa;
+        }
+
+        .completed-msg {
+            font-size: 20px;
+            color: #2ecc71;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #0056b3;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 15px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        .pr-buttons {
+            display: flex;
+            justify-content: space-between; /* Это свойство автоматически расположит одну кнопку слева, а другую — справа */
+            margin-top: 40px;
+        }
+
+        .back-link {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/index}">AutoSchool</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/users}">Админ</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/themes}">Теория</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/drivers}">Вождение</a>
+                </li>
+                <li class="nav-item" th:if = "${#authorization.expression('isAuthenticated()') and not #authorization.expression('hasRole(''USER'')')}">
+                    <a class="nav-link" th:href="@{/sessions}">Записи</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/test}">Тест</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('hasAnyRole(''USER'', ''ADMIN'')')}">
+                    <a class="nav-link" th:href="@{/traffic-sign}">Знаки</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/profile}">Профиль</a>
+                </li>
+                <li class="nav-item" th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/register}">Регистрация</a>
+                </li>
+                <li class="nav-item" th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/login}">Войти</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/logout}">Выйти</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<header>
+    <h1 style="font-weight: bold" th:text="${theme.title}">Название темы</h1>
+</header>
+<main>
+    <article>
+        <p th:text="${theme.description}">Описание темы</p>
+        <div class="video-container">
+            <iframe th:src="@{'https://www.youtube.com/embed/' + ${theme.videoUrl}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="buttons">
+            <a th:href="@{/test/{testId}(testId=${theme.id})}" class="btn btn-outline-info" th:if="${!testPassed}">Пройти тест</a>
+            <a th:href="@{/test/results/{testId}(testId=${theme.id})}" class="btn btn-outline-info" th:if="${testPassed}">Посмотреть ответы теста</a>
+        </div>
+    </article>
+    <h3 th:if="${!isCompleted and !testPassed}" class="completed-msg">Чтобы завершить тему пройдите тестирование</h3>
+    <form th:action="@{/themes/{id}/complete(id=${theme.id})}" th:if="${testPassed==true and !isCompleted}" method="post">
+        <button class="btn btn-outline-success" type="submit">Завершить тему</button>
+    </form>
+    <h3 th:if="${isCompleted}" class="completed-msg">Тема завершена</h3>
+    <div class="pr-buttons">
+        <div th:if="${theme.id > 1}">
+            <a th:href="@{/themes/{id}(id=${theme.id} - 1)}" class="back-link"> &lt; Назад </a>
+        </div>
+        <div th:if="${nextThemeExists == true and isCompleted}">
+            <a th:href="@{/themes/{id}(id=${theme.id} + 1)}" class="back-link"> Вперед &gt; </a>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>
